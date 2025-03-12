@@ -5,8 +5,8 @@ import requests
 
 from PyQt6 import uic
 from PyQt6.QtGui import QPixmap
-from PyQt6.QtWidgets import QApplication, QMainWindow, QLabel
-
+from PyQt6.QtWidgets import QApplication, QMainWindow
+from PyQt6.QtCore import Qt
 
 
 class MyWidget(QMainWindow):
@@ -18,20 +18,21 @@ class MyWidget(QMainWindow):
 
     def initUI(self):
         uic.loadUi('ui_file.ui', self)
+        self.ok_button.clicked.connect(self.getImage)
         self.wight_Edit.setText('55.755811')
         self.high_Edit.setText('37.617617')
         self.size_Edit.setText('0.05')
-        self.ok_button.clicked.connect(self.getImage)
 
     def getImage(self):
+        self.a = self.wight_Edit.text()
+        self.b = self.high_Edit.text()
+        self.c = self.size_Edit.text()
+        self.imagee()
+
+    def imagee(self):
         server_address = 'https://static-maps.yandex.ru/v1?'
         api_key = 'f3a0fe3a-b07e-4840-a1da-06f18b2ddf13'
-        a = self.wight_Edit.text()
-        b = self.high_Edit.text()
-        c = self.size_Edit.text()
-        self.ll_spn = f'll={b},{a}&spn={c},{c}'
-        # Готовим запрос.
-
+        self.ll_spn = f'll={self.b},{self.a}&spn={self.c},{self.c}'
         map_request = f"{server_address}{self.ll_spn}&apikey={api_key}"
         response = requests.get(map_request)
 
@@ -40,18 +41,29 @@ class MyWidget(QMainWindow):
             print(map_request)
             print("Http статус:", response.status_code, "(", response.reason, ")")
             sys.exit(1)
-
-        # Запишем полученное изображение в файл.
         self.map_file = "map.png"
         with open(self.map_file, "wb") as file:
             file.write(response.content)
 
-        self.imagee()
-
-    def imagee(self):
         self.pixmap = QPixmap(self.map_file)
         self.map_label.resize(640, 300)
         self.map_label.setPixmap(self.pixmap)
+
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key.Key_Up:
+            self.c = float(str(self.c)[:5])
+            self.c *= 2
+            if self.c == 0:
+                self.c += 0.001
+        if event.key() == Qt.Key.Key_Down:
+            self.c = float(str(self.c)[:5])
+            self.c /= 2
+        try:
+            self.size_Edit.setText(str(self.c)[:5])
+            self.imagee()
+        except:
+            print('error')
+            pass
 
 
 def except_hook(cls, exception, traceback):

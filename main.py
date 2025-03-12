@@ -24,6 +24,7 @@ class MyWidget(QMainWindow):
         self.a = self.wight_Edit.text()
         self.b = self.high_Edit.text()
         self.c = self.size_Edit.text()
+        self.metka = (0, 0)
 
     def shere(self):
         server_address = 'http://geocode-maps.yandex.ru/1.x/?'
@@ -37,6 +38,7 @@ class MyWidget(QMainWindow):
             toponym_coodrinates = toponym["Point"]["pos"].split()
             self.wight_Edit.setText(toponym_coodrinates[1])
             self.high_Edit.setText(toponym_coodrinates[0])
+            self.metka = (toponym_coodrinates[0], toponym_coodrinates[1])
             self.getImage()
         else:
             print("Ошибка выполнения запроса:")
@@ -55,6 +57,7 @@ class MyWidget(QMainWindow):
 
         params = {
             "ll": ",".join([str(self.b), str(self.a)]),
+            "pt": ",".join([str(self.metka[0]), str(self.metka[1])]),
             "spn": ",".join([self.c, self.c]),
             "theme": "dark" if self.checkBox.isChecked() else "light",
             "apikey": api_key

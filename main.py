@@ -17,6 +17,7 @@ class MyWidget(QMainWindow):
         uic.loadUi('ui_file.ui', self)
         self.ok_button.clicked.connect(self.getImage)
         self.search_button.clicked.connect(self.shere)
+        self.reset_button.clicked.connect(self.reset)
         self.wight_Edit.setText('55.755811')
         self.high_Edit.setText('37.617617')
         self.size_Edit.setText('0.05')
@@ -24,6 +25,10 @@ class MyWidget(QMainWindow):
         self.b = self.high_Edit.text()
         self.c = self.size_Edit.text()
         self.metka = (0, 0)
+
+    def reset(self):
+        self.metka = (0, 0)
+        self.imagee()
 
     def shere(self):
         server_address = 'http://geocode-maps.yandex.ru/1.x/?'

@@ -1,5 +1,3 @@
-import io
-import os
 import sys
 import requests
 
@@ -51,15 +49,21 @@ class MyWidget(QMainWindow):
 
     def keyPressEvent(self, event):
         if event.key() == Qt.Key.Key_Up:
-            self.c = float(str(self.c)[:5])
-            self.c *= 2
-            if self.c == 0:
-                self.c += 0.001
+            self.a = float(self.a)
+            self.a += 0.01 * float(self.c) * 50
         if event.key() == Qt.Key.Key_Down:
-            self.c = float(str(self.c)[:5])
-            self.c /= 2
+            self.a = float(self.a)
+            self.a -= 0.01 * float(self.c) * 50
+        if event.key() == Qt.Key.Key_Right:
+            self.b = float(self.b)
+            self.b += 0.01 * float(self.c) * 50
+
+        if event.key() == Qt.Key.Key_Left:
+            self.b = float(self.b)
+            self.b -= 0.01 * float(self.c) * 50
         try:
-            self.size_Edit.setText(str(self.c)[:5])
+            self.wight_Edit.setText(str(self.a))
+            self.high_Edit.setText(str(self.b))
             self.imagee()
         except:
             print('error')

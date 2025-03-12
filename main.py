@@ -17,9 +17,31 @@ class MyWidget(QMainWindow):
     def initUI(self):
         uic.loadUi('ui_file.ui', self)
         self.ok_button.clicked.connect(self.getImage)
+        self.search_button.clicked.connect(self.shere)
         self.wight_Edit.setText('55.755811')
         self.high_Edit.setText('37.617617')
         self.size_Edit.setText('0.05')
+        self.a = self.wight_Edit.text()
+        self.b = self.high_Edit.text()
+        self.c = self.size_Edit.text()
+
+    def shere(self):
+        server_address = 'http://geocode-maps.yandex.ru/1.x/?'
+        api_key = '8013b162-6b42-4997-9691-77b7074026e0'
+        geocode = self.search_Edit.text()
+        geocoder_request = f'{server_address}apikey={api_key}&geocode={geocode}&format=json'
+        response = requests.get(geocoder_request)
+        if response:
+            json_response = response.json()
+            toponym = json_response["response"]["GeoObjectCollection"]["featureMember"][0]["GeoObject"]
+            toponym_coodrinates = toponym["Point"]["pos"].split()
+            self.wight_Edit.setText(toponym_coodrinates[1])
+            self.high_Edit.setText(toponym_coodrinates[0])
+            self.getImage()
+        else:
+            print("Ошибка выполнения запроса:")
+            print(geocoder_request)
+            print("Http статус:", response.status_code, "(", response.reason, ")")
 
     def getImage(self):
         self.a = self.wight_Edit.text()
@@ -32,7 +54,7 @@ class MyWidget(QMainWindow):
         api_key = 'f3a0fe3a-b07e-4840-a1da-06f18b2ddf13'
 
         params = {
-            "ll": ",".join([self.b, self.a]),
+            "ll": ",".join([str(self.b), str(self.a)]),
             "spn": ",".join([self.c, self.c]),
             "theme": "dark" if self.checkBox.isChecked() else "light",
             "apikey": api_key
@@ -55,23 +77,27 @@ class MyWidget(QMainWindow):
         if event.key() == Qt.Key.Key_Up:
             self.a = float(self.a)
             self.a += 0.01 * float(self.c) * 50
+            self.wight_Edit.setText(str(self.a)[:9])
+            self.high_Edit.setText(str(self.b)[:9])
+            self.imagee()
         if event.key() == Qt.Key.Key_Down:
             self.a = float(self.a)
             self.a -= 0.01 * float(self.c) * 50
+            self.wight_Edit.setText(str(self.a)[:9])
+            self.high_Edit.setText(str(self.b)[:9])
+            self.imagee()
         if event.key() == Qt.Key.Key_Right:
             self.b = float(self.b)
             self.b += 0.01 * float(self.c) * 50
-
+            self.wight_Edit.setText(str(self.a)[:9])
+            self.high_Edit.setText(str(self.b)[:9])
+            self.imagee()
         if event.key() == Qt.Key.Key_Left:
             self.b = float(self.b)
             self.b -= 0.01 * float(self.c) * 50
-        try:
-            self.wight_Edit.setText(str(self.a))
-            self.high_Edit.setText(str(self.b))
+            self.wight_Edit.setText(str(self.a)[:9])
+            self.high_Edit.setText(str(self.b)[:9])
             self.imagee()
-        except:
-            print('error')
-            pass
 
 
 def except_hook(cls, exception, traceback):

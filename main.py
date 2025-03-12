@@ -30,15 +30,19 @@ class MyWidget(QMainWindow):
     def imagee(self):
         server_address = 'https://static-maps.yandex.ru/v1?'
         api_key = 'f3a0fe3a-b07e-4840-a1da-06f18b2ddf13'
-        self.ll_spn = f'll={self.b},{self.a}&spn={self.c},{self.c}'
-        map_request = f"{server_address}{self.ll_spn}&apikey={api_key}"
-        response = requests.get(map_request)
+
+        params = {
+            "ll": ",".join([self.b, self.a]),
+            "spn": ",".join([self.c, self.c]),
+            "theme": "dark" if self.checkBox.isChecked() else "light",
+            "apikey": api_key
+        }
+
+        response = requests.get(server_address, params=params)
 
         if not response:
             print("Ошибка выполнения запроса:")
-            print(map_request)
             print("Http статус:", response.status_code, "(", response.reason, ")")
-            sys.exit(1)
         self.map_file = "map.png"
         with open(self.map_file, "wb") as file:
             file.write(response.content)

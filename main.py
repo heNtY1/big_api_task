@@ -28,6 +28,7 @@ class MyWidget(QMainWindow):
 
     def reset(self):
         self.metka = (0, 0)
+        self.adres_Edit.setText('')
         self.imagee()
 
     def shere(self):
@@ -39,9 +40,11 @@ class MyWidget(QMainWindow):
         if response:
             json_response = response.json()
             toponym = json_response["response"]["GeoObjectCollection"]["featureMember"][0]["GeoObject"]
+            toponym_address = toponym["metaDataProperty"]["GeocoderMetaData"]["text"]
             toponym_coodrinates = toponym["Point"]["pos"].split()
             self.wight_Edit.setText(toponym_coodrinates[1])
             self.high_Edit.setText(toponym_coodrinates[0])
+            self.adres_Edit.setText(toponym_address)
             self.metka = (toponym_coodrinates[0], toponym_coodrinates[1])
             self.getImage()
         else:
